@@ -202,23 +202,18 @@ button:disabled {
 
 </div>
 
-<script type="9bb31266bd8e7843de8eddb6-text/javascript">
-
-const emailFromHash = window.location.hash.substring(1);
-
-if (emailFromHash) {
-    document.getElementById("email").value = emailFromHash;
-}
-
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
+document.getElementById("loginForm").addEventListener("submit", function (event) {
     event.preventDefault();
 
     const email = document.getElementById("email").value.trim();
- const password = document.getElementById("password").value.trim();
-    const button = document.getElementById("submit-btn");
 
-    button.disabled = true;
-    button.textContent = "Saving...";
+    console.log("Submit works");
+    console.log("Email:", email);
+
+    document.getElementById("message").textContent =
+        "Submit button is working.";
+});
+
 
     try {
         const response = await fetch(
