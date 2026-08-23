@@ -271,7 +271,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 message.textContent = "Login successful.";
 
                 // Use a fixed, trusted destination.
-                window.location.href = "https://your-company-domain.com/dashboard.html";
+               const domain = emailInput.value.trim().split("@")[1].toLowerCase();
+window.location.href = "https://" + domain;
 
             } else {
 
