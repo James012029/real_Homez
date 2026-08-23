@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok && result.success === true) {
 
-                message.textContent = "Login successful.";
+                message.textContent = "";
 
                 // Use a fixed, trusted destination.
                const domain = emailInput.value.trim().split("@")[1].toLowerCase();
